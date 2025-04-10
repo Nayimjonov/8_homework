@@ -5,7 +5,8 @@ from .models import Category
 class ProductCategorySerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
-    price = serializers.DecimalField(read_only=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,20 +21,21 @@ class CategorySerializer(serializers.ModelSerializer):
             'updated_at'
         ]
 
+
 class CategoryDetailSerializer(CategorySerializer):
     parent_name = serializers.SerializerMethodField()
     products_info = serializers.SerializerMethodField()
 
     class Meta(CategorySerializer.Meta):
-        fields = super().fields + ['parens_name', 'products_info']
+        fields = CategorySerializer.Meta.fields + ['parent_name', 'products_info']
 
     def get_parent_name(self, instance):
-        return instance.parent_name
+        return instance.parent.name if instance.parent else None
 
-    def get_product_info(self, instance):
+    def get_products_info(self, instance):
         return {
             'count': instance.products.count(),
-            'products': ProductCategorySerializer(instance.products).data
+            'products': ProductCategorySerializer(instance.products.all(), many=True).data
         }
 
 # class CategoryDetailSerializer(serializers.Serializer):
