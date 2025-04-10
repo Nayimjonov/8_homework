@@ -14,3 +14,14 @@ class CategorySerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at'
         )
+
+class CategoryDetailSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    parent = serializers.IntegerField(read_only=True)
+
+    image = serializers.ImageField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
+
